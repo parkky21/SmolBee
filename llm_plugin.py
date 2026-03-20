@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import threading
 from typing import Any
 
 from livekit.agents import llm
@@ -111,49 +112,53 @@ class LocalLlamaLLMStream(llm.LLMStream):
             f"roles={[m['role'] for m in oai_messages]}"
         )
 
+        abort_flag = [False]
         try:
-            # Run the blocking llama_cpp inference in a thread executor
-            def _generate():
-                generate_kwargs = self._kwargs.copy()
-                if "max_tokens" not in generate_kwargs:
-                    generate_kwargs["max_tokens"] = 512
-                    
-                return self._llama.create_chat_completion(
-                    messages=oai_messages,
-                    stream=True,
-                    **generate_kwargs,
-                )
+            def _generate_all():
+                with self._llm._llama_lock:
+                    generate_kwargs = self._kwargs.copy()
+                    if "max_tokens" not in generate_kwargs:
+                        generate_kwargs["max_tokens"] = 512
+                        
+                    iterator = self._llama.create_chat_completion(
+                        messages=oai_messages,
+                        stream=True,
+                        **generate_kwargs,
+                    )
 
-            iterator = await loop.run_in_executor(None, _generate)
+                    for chunk in iterator:
+                        if abort_flag[0]:
+                            break
+                        chunk_id = chunk.get("id", "local-msg")
+                        choices = chunk.get("choices", [])
 
-            def _get_next():
-                try:
-                    return next(iterator)
-                except StopIteration:
-                    return None
+                        for choice in choices:
+                            delta = choice.get("delta", {})
+                            content = delta.get("content")
+                            role = delta.get("role")
 
-            while True:
-                chunk = await loop.run_in_executor(None, _get_next)
-                if chunk is None:
-                    break
+                            if content is not None or role is not None:
+                                chat_chunk = llm.ChatChunk(
+                                    id=chunk_id,
+                                    delta=llm.ChoiceDelta(
+                                        role=role or "assistant",
+                                        content=content if content is not None else "",
+                                    ),
+                                )
+                                # Post the new chunk back to the main asyncio thread loop safely
+                                def safe_send(chk=chat_chunk):
+                                    try:
+                                        self._event_ch.send_nowait(chk)
+                                    except Exception:
+                                        pass
+                                loop.call_soon_threadsafe(safe_send)
 
-                chunk_id = chunk.get("id", "local-msg")
-                choices = chunk.get("choices", [])
+            # Block the async _run method until the background generator finishes completely 
+            await loop.run_in_executor(None, _generate_all)
 
-                for choice in choices:
-                    delta = choice.get("delta", {})
-                    content = delta.get("content")
-                    role = delta.get("role")
-
-                    if content is not None or role is not None:
-                        chat_chunk = llm.ChatChunk(
-                            id=chunk_id,
-                            delta=llm.ChoiceDelta(
-                                role=role or "assistant",
-                                content=content if content is not None else "",
-                            ),
-                        )
-                        self._event_ch.send_nowait(chat_chunk)
+        except asyncio.CancelledError:
+            abort_flag[0] = True
+            raise
 
         except Exception as e:
             logger.error(f"Error in local LLM generation: {e}")
@@ -170,6 +175,7 @@ class LocalLlamaLLM(llm.LLM):
     ):
         super().__init__()
         self._model_path = model_path
+        self._llama_lock = threading.Lock()
         self._llama = Llama(
             model_path=model_path,
             n_ctx=n_ctx,
