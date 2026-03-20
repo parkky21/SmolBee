@@ -22,7 +22,7 @@ class LocalKokoroTTS(tts.TTS):
         )
         self.options = KokoroTTSOptions(voice=voice)
         # Load kokoro models - downloads if not present
-        self.kokoro = Kokoro("kokoro-v1.0.onnx", "voices.bin")
+        self.kokoro = Kokoro("models/kokoro-v1.0.onnx", "models/voices.bin")
         
     def synthesize(
         self, text: str, *, conn_options: types.APIConnectOptions | None = None

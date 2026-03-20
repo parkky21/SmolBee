@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 from livekit.agents.metrics import LLMMetrics, STTMetrics, TTSMetrics, EOUMetrics
 from livekit.agents import Agent, AgentSession, AutoSubscribe, JobContext, JobProcess, WorkerOptions, cli, llm
 from livekit.plugins import openai, silero
-from llm_plugin import LocalLlamaLLM
-from stt_plugin import LocalWhisperSTT
-from tts_plugin import LocalKokoroTTS
+from plugins.llm_plugin import LocalLlamaLLM
+from plugins.stt_plugin import LocalWhisperSTT
+from plugins.tts_plugin import LocalKokoroTTS
 
 load_dotenv()
 logger = logging.getLogger("agent")
@@ -15,7 +15,7 @@ logger = logging.getLogger("agent")
 class Assistant(Agent):
     def __init__(self) -> None:
         agent_stt = LocalWhisperSTT(model_size="distil-small.en", language="en")
-        agent_llm = LocalLlamaLLM(model_path="gemma-3-1b-it-UD-Q8_k_XL.gguf")
+        agent_llm = LocalLlamaLLM(model_path="models/gemma-3-1b-it-UD-Q8_K_XL.gguf")
         agent_tts = LocalKokoroTTS(voice="af_heart")
 
         super().__init__(

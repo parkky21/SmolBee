@@ -1,6 +1,6 @@
 from llama_cpp import Llama
 
-MODEL_PATH = "gemma-3-1b-it-UD-Q8_k_XL.gguf"  # change if needed
+MODEL_PATH = "models/gemma-3-1b-it-UD-Q8_K_XL.gguf"  # change if needed
 
 print("Loading model...")
 
