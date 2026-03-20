@@ -1,16 +1,35 @@
-# React + Vite
+# LocalBee Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The user interface for the Offline AI Voice Assistant, built with React and LiveKit.
 
-Currently, two official plugins are available:
+## 🚀 Setup Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 1. Prerequisites
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
-## React Compiler
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 3. Run Development Server
+```bash
+npm run dev
+```
+The app will be accessible at `http://localhost:5173/` (or similar).
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📂 Project Structure
+- **`src/`**: Main source code.
+  - **`components/`**: React components.
+    - **`VoiceAssistant`**: Core component for voice interaction using LiveKit hooks.
+  - **`App.jsx`**: Main application setup drawing together components.
+- **`public/`**: Assets available directly (icons, logo).
+
+---
+
+## 🛠 Features
+- **LiveKit React Components**: Out-of-the-box support for connecting to rooms, visualizers, and state management.
+- **Tailwind CSS Integration**: Styled for sleek dark mode aesthetics.
