@@ -1,0 +1,55 @@
+# Python environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# AI Models & Weights
+*.gguf
+*.onnx
+*.bin
+*.pt
+*.pth
+*.safetensors
+models/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Logs and outputs
+*.log
