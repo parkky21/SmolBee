@@ -1,13 +1,33 @@
 import os
+import logging
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from livekit.api import AccessToken, VideoGrants
 from dotenv import load_dotenv
+from configs import GetConfigs
+from agent_server import AgentRunner
+from agent import entrypoint
+from contextlib import asynccontextmanager
+from token_service import create_token_with_agent_dispatch
+
+logging.basicConfig(level=logging.INFO)
+worker = AgentRunner(entrypoint)
+
+configurations = GetConfigs()
 
 load_dotenv()
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await worker.start()
+    yield
+    # Shutdown
+    await worker.stop()
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,9 +41,9 @@ class ConnectionRequest(BaseModel):
     participant_name: str
     room_name: str
 
-LIVEKIT_URL = os.getenv("LIVEKIT_URL")
-LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY")
-LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET")
+LIVEKIT_URL = configurations.get_livekit_url()
+LIVEKIT_API_KEY = configurations.get_livekit_api_key()
+LIVEKIT_API_SECRET = configurations.get_livekit_api_secret()
 
 @app.post("/api/connection-details")
 async def get_connection_details(request: ConnectionRequest):
@@ -31,14 +51,10 @@ async def get_connection_details(request: ConnectionRequest):
         raise HTTPException(status_code=500, detail="LiveKit credentials not configured in backend .env")
 
     # Generate token
-    token = AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET) \
-        .with_identity(request.participant_name) \
-        .with_grants(VideoGrants(room_join=True, room=request.room_name))
-    
-    jwt_token = token.to_jwt()
+    token = create_token_with_agent_dispatch()
     
     return {
-        "token": jwt_token,
+        "token": token,
         "serverUrl": LIVEKIT_URL
     }
 

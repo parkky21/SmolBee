@@ -3,7 +3,7 @@ import logging
 import os
 from dotenv import load_dotenv
 from livekit.agents.metrics import LLMMetrics, STTMetrics, TTSMetrics, EOUMetrics
-from livekit.agents import Agent, AgentSession, AutoSubscribe, JobContext, JobProcess, WorkerOptions, cli, llm
+from livekit.agents import AgentServer, Agent, AgentSession, AutoSubscribe, JobContext, JobProcess, WorkerOptions, cli, llm
 from livekit.plugins import openai, silero
 from plugins.llm_plugin import LocalLlamaLLM
 from plugins.stt_plugin import LocalWhisperSTT
@@ -97,10 +97,6 @@ class Assistant(Agent):
             instructions="Greet the user and tell him about yourself. Keep it short and sweet.", allow_interruptions=True
         )
 
-
-def prewarm(proc: JobProcess):
-    logger.info("Initializing offline agent dependencies...")
-
 async def entrypoint(ctx: JobContext):
     # This determines connection initialization
     await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
@@ -112,7 +108,7 @@ async def entrypoint(ctx: JobContext):
     logger.info(f"starting voice assistant for participant {participant.identity}")
 
     session = AgentSession(
-        vad=silero.VAD.load(),
+        vad=ctx.proc.userdata["vad"],
         min_endpointing_delay=0.5,
         max_endpointing_delay=5.0,
     )
