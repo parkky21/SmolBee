@@ -1,39 +1,96 @@
 @import "tailwindcss";
 
 @theme {
+  --color-primary-400: #9f7aea;
   --color-primary-500: #8b5cf6;
   --color-primary-600: #7c3aed;
-  --color-dark-surface: rgba(17, 24, 39, 0.7);
-  --color-dark-bg: #030712;
+  --color-accent-400: #38bdf8;
+  --color-accent-500: #0ea5e9;
+  
+  --color-dark-surface: rgba(17, 24, 39, 0.45);
+  --color-dark-panel: rgba(15, 23, 42, 0.65);
+  --color-dark-bg: #020617;
+  
+  --animate-blob: blob 7s infinite;
+  --animate-blob-slow: blob 10s infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-wave: wave 1.2s ease-in-out infinite;
+  
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  @keyframes shimmer {
+    from { background-position: 200% center; }
+    to { background-position: -200% center; }
+  }
+  
+  @keyframes wave {
+    0%, 100% { height: 10%; }
+    50% { height: 100%; }
+  }
+  
+  @keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.8; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+    70% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 30px rgba(139, 92, 246, 0); }
+    100% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+  }
+  
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 }
 
 @layer base {
   body {
-    @apply bg-dark-bg text-white antialiased selection:bg-primary-500 selection:text-white m-0 min-h-screen overflow-x-hidden;
+    @apply bg-dark-bg text-slate-100 antialiased selection:bg-primary-500 selection:text-white m-0 min-h-screen overflow-x-hidden;
     background-image: 
-      radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
-      radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.15), transparent 25%);
+      radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1), transparent 30%),
+      radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.08), transparent 35%),
+      radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8), transparent 60%);
+    background-color: #020617;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-dark-surface backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl;
+    @apply bg-dark-panel backdrop-blur-2xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] rounded-3xl relative overflow-hidden;
+  }
+  
+  /* Shiny edge effect on glass panels */
+  .glass-panel::after {
+    content: '';
+    @apply absolute inset-0 rounded-3xl pointer-events-none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
   }
   
   .glass-button {
-    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 active:scale-95;
+    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-white/10 hover:border-white/20 rounded-2xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2;
   }
   
   .glass-input {
-    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+    @apply bg-dark-surface border border-white/10 hover:border-white/20 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400 focus:bg-white/5 transition-all text-sm font-medium shadow-inner;
   }
-}
-
-/* Custom animations */
-@keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 0.5; }
-  100% { transform: scale(1.3); opacity: 0; }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-primary-500;
+  }
+  
+  .shimmer-text {
+    @apply bg-[linear-gradient(110deg,#e2e8f0,45%,#ffffff,55%,#e2e8f0)] bg-[length:200%_auto] text-transparent bg-clip-text animate-shimmer;
+  }
 }
 
 .animate-pulse-ring::before {
@@ -41,6 +98,5 @@
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
   border-radius: inherit;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
   animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }

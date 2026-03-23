@@ -12,6 +12,7 @@ dependencies = [
     "livekit-agents>=1.4.5",
     "livekit-plugins-openai>=1.4.5",
     "livekit-plugins-silero>=1.4.5",
+    "livekit-plugins-noise-cancellation~=0.2",
     "llama-cpp-python>=0.3.16",
     "python-dotenv>=1.2.2",
     "scipy>=1.17.1",
