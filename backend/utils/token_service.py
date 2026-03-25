@@ -4,7 +4,7 @@ from livekit.api import (
   RoomConfiguration,
   VideoGrants,
 )
-from configs import GetConfigs
+from core.configs import GetConfigs
 
 configurations = GetConfigs()
 

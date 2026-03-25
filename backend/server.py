@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from livekit.api import AccessToken, VideoGrants
 from dotenv import load_dotenv
 from core.configs import GetConfigs
-from agent_server import AgentRunner
+from core.agent_server import AgentRunner
 from core.agent import entrypoint
 from contextlib import asynccontextmanager
 from utils.token_service import create_token_with_agent_dispatch
