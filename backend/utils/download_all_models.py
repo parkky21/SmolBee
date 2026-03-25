@@ -11,9 +11,10 @@ print("1. Downloading Whisper model (distil-small.en)...")
 download_model("distil-small.en") 
 
 print("\n2. Downloading Gemma 3 1B GGUF...")
+# You can choose other variants from: https://huggingface.co/unsloth/gemma-3-1b-it-GGUF/tree/main
 hf_hub_download(
     repo_id="unsloth/gemma-3-1b-it-GGUF",
-    filename="gemma-3-1b-it-UD-Q8_K_XL.gguf",
+    filename="gemma-3-1b-it-Q8_0.gguf",
     local_dir=MODELS_DIR
 )
 

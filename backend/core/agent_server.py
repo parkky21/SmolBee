@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from configs import GetConfigs
+from core.configs import GetConfigs
 from livekit.agents import WorkerOptions, AgentServer as LKAgentServer
 from livekit import agents
 from livekit.plugins import silero

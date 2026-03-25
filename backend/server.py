@@ -6,11 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from livekit.api import AccessToken, VideoGrants
 from dotenv import load_dotenv
-from configs import GetConfigs
+from core.configs import GetConfigs
 from agent_server import AgentRunner
-from agent import entrypoint
+from core.agent import entrypoint
 from contextlib import asynccontextmanager
-from token_service import create_token_with_agent_dispatch
+from utils.token_service import create_token_with_agent_dispatch
 
 logging.basicConfig(level=logging.INFO)
 worker = AgentRunner(entrypoint)
