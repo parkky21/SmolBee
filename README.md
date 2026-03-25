@@ -1,4 +1,4 @@
-# 🐝 LocalBee
+# 🐝 OpenBee
 
 **LocalBee** is an offline AI Voice Assistant application that runs fully locally for security and privacy. Powered by LiveKit Agents, modern inference plugins (Kokoro TTS, Whisper STT, Gemma LLM), and a beautiful React dashboard.
 
