@@ -1,6 +1,6 @@
 # 🐝 OpenBee
 
-**LocalBee** is an offline AI Voice Assistant application that runs fully locally for security and privacy. Powered by LiveKit Agents, modern inference plugins (Kokoro TTS, Whisper STT, Gemma LLM), and a beautiful React dashboard.
+**OpenBee** is an offline AI Voice Assistant application that runs fully locally for security and privacy. Powered by LiveKit Agents, modern inference plugins (Kokoro TTS, Whisper STT, Gemma LLM), and a beautiful React dashboard.
 
 ---
 
@@ -38,4 +38,4 @@ Follow instructions in [**`frontend/README.md`**](./frontend/README.md) to:
 ## 🛠 Stack
 - **Dashboard UI**: React, Tailwind CSS, Vite
 - **Agent Server**: LiveKit, FastRTC, Custom Python inference pipelines
-- **Models**: Gemma2 2B (LLM), Whisper Tiny (STT), Kokoro (TTS)
+- **Models**: Gemma3 1B (LLM), Whisper Small (STT), Kokoro (TTS)
