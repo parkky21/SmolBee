@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-400: #9f7aea;
-  --color-primary-500: #8b5cf6;
-  --color-primary-600: #7c3aed;
-  --color-accent-400: #38bdf8;
-  --color-accent-500: #0ea5e9;
+  --color-honey-300: #fcd34d;
+  --color-honey-400: #fbbf24;
+  --color-honey-500: #f59e0b;
+  --color-honey-600: #d97706;
+  --color-honey-700: #b45309;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
   
   --color-dark-surface: rgba(17, 24, 39, 0.45);
   --color-dark-panel: rgba(15, 23, 42, 0.65);
-  --color-dark-bg: #020617;
+  --color-dark-bg: #0c0a09;
   
   --animate-blob: blob 7s infinite;
   --animate-blob-slow: blob 10s infinite;
@@ -42,9 +44,9 @@
   }
   
   @keyframes pulse-ring {
-    0% { transform: scale(0.8); opacity: 0.8; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
-    70% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 30px rgba(139, 92, 246, 0); }
-    100% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+    0% { transform: scale(0.8); opacity: 0.8; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+    70% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 30px rgba(251, 191, 36, 0); }
+    100% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
   }
   
   @keyframes spin-slow {
@@ -55,12 +57,12 @@
 
 @layer base {
   body {
-    @apply bg-dark-bg text-slate-100 antialiased selection:bg-primary-500 selection:text-white m-0 min-h-screen overflow-x-hidden;
+    @apply bg-dark-bg text-slate-100 antialiased selection:bg-honey-500 selection:text-black m-0 min-h-screen overflow-x-hidden;
     background-image: 
-      radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1), transparent 30%),
-      radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.08), transparent 35%),
+      radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.07), transparent 30%),
+      radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.05), transparent 35%),
       radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8), transparent 60%);
-    background-color: #020617;
+    background-color: #0c0a09;
   }
 }
 
@@ -69,27 +71,26 @@
     @apply bg-dark-panel backdrop-blur-2xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] rounded-3xl relative overflow-hidden;
   }
   
-  /* Shiny edge effect on glass panels */
   .glass-panel::after {
     content: '';
     @apply absolute inset-0 rounded-3xl pointer-events-none;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
   }
   
   .glass-button {
-    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-white/10 hover:border-white/20 rounded-2xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2;
+    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(251,191,36,0.3)] border border-white/10 hover:border-white/20 rounded-2xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2;
   }
   
   .glass-input {
-    @apply bg-dark-surface border border-white/10 hover:border-white/20 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400 focus:bg-white/5 transition-all text-sm font-medium shadow-inner;
+    @apply bg-dark-surface border border-white/10 hover:border-honey-500/30 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-honey-500/50 focus:border-honey-400 focus:bg-white/5 transition-all text-sm font-medium shadow-inner;
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-primary-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-honey-300 via-honey-500 to-accent-500;
   }
   
   .shimmer-text {
-    @apply bg-[linear-gradient(110deg,#e2e8f0,45%,#ffffff,55%,#e2e8f0)] bg-[length:200%_auto] text-transparent bg-clip-text animate-shimmer;
+    @apply bg-[linear-gradient(110deg,#fcd34d,45%,#ffffff,55%,#fcd34d)] bg-[length:200%_auto] text-transparent bg-clip-text animate-shimmer;
   }
 }
 
