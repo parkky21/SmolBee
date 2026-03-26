@@ -1,4 +1,4 @@
-# LocalBee Frontend
+# OpenBee Frontend
 
 The user interface for the Offline AI Voice Assistant, built with React and LiveKit.
 

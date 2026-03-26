@@ -42,7 +42,7 @@ export default function VoiceAssistant({ serverUrl, token, onDisconnect }) {
             <span className="text-xs font-bold text-bee-black tracking-widest uppercase">Live Connection</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-gradient drop-shadow-sm">
-            LocalBee 🐝
+            OpenBee 🐝
           </h2>
         </div>
         

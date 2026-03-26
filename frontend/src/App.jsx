@@ -63,7 +63,7 @@ function App() {
               
               <div className="space-y-4">
                 <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
-                  <span className="text-gradient">LocalBee</span> 🐝 <br/>
+                  <span className="text-gradient">OpenBee</span> 🐝 <br/>
                   <span className="text-bee-charcoal/80 text-4xl md:text-5xl">Your Local Assistant</span>
                 </h1>
                 
