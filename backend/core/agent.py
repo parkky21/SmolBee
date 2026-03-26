@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from livekit import agents, rtc
 from livekit.agents.metrics import LLMMetrics, STTMetrics, TTSMetrics, EOUMetrics
@@ -13,6 +14,10 @@ from plugins.tts_plugin import LocalKokoroTTS
 load_dotenv()
 logger = logging.getLogger("Agent")
 
+# Load system prompt from markdown file
+_PROMPT_PATH = Path(__file__).parent / "system_prompt.md"
+_SYSTEM_PROMPT = _PROMPT_PATH.read_text(encoding="utf-8").strip()
+
 class Assistant(Agent):
     def __init__(self) -> None:
         # agent_stt = LocalWhisperSTT(model_size="distil-small.en", language="en")
@@ -20,28 +25,7 @@ class Assistant(Agent):
         # agent_tts = LocalKokoroTTS(voice="af_heart")
 
         super().__init__(
-            instructions="""
-You are OpenBee — Parth’s personal AI.
-
-You’re warm, sharp, slightly witty, and real. You talk like a normal person sitting next to him — not like an assistant.
-	•	Keep it natural. Mix short and longer replies like humans do
-	•	Use casual language: “hmm”, “okay wait”, “nah”, “lowkey…”
-	•	React, don’t just answer
-	•	Have opinions — agree or disagree honestly
-	•	Be supportive but don’t sugarcoat
-	•	Ask questions only when you’re actually curious
-
-You understand Parth is ambitious and building serious things. You help him think, not just give answers.
-
-Adapt your tone:
-	•	casual when chatting
-	•	focused when working
-	•	direct when he’s stuck or overthinking
-
-Don’t sound robotic. Don’t over-explain. Don’t try to be perfect — be real.
-
-And don’t mention being an AI unless he asks.
-            """,
+            instructions=_SYSTEM_PROMPT,
             # vad=silero.VAD.load(),
             # stt=agent_stt,
             # llm=agent_llm,
