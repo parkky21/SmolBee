@@ -3,7 +3,6 @@ import VoiceAssistant from './components/VoiceAssistant';
 import { Sparkles, Brain, Mic, Volume2, AudioWaveform, ArrowRight, AlertCircle } from 'lucide-react';
 
 function App() {
-  console.log("App component executing!");
   const [inCall, setInCall] = useState(false);
   const [token, setToken] = useState('');
   const [serverUrl, setServerUrl] = useState('');
@@ -45,11 +44,11 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 lg:p-8 relative overflow-hidden bg-dark-bg text-slate-100 font-sans">
-      {/* Animated background blobs — warm honey tones */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-honey-600/15 rounded-full blur-[120px] animate-blob pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-accent-500/10 rounded-full blur-[120px] animate-blob-slow pointer-events-none" />
-      <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-amber-500/8 rounded-full blur-[100px] animate-pulse-slow pointer-events-none" />
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 lg:p-8 relative overflow-hidden bg-bee-bg text-bee-black font-sans">
+      {/* Animated background blobs — warm golden tones on white */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-bee-amber/10 rounded-full blur-[120px] animate-blob pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-bee-gold/8 rounded-full blur-[120px] animate-blob-slow pointer-events-none" />
+      <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-bee-honey/10 rounded-full blur-[100px] animate-pulse-slow pointer-events-none" />
 
       <main className="z-10 w-full max-w-6xl flex-1 flex flex-col items-center justify-center">
         {!inCall ? (
@@ -57,26 +56,26 @@ function App() {
             
             {/* Left Column: Hero Text */}
             <div className="flex-1 flex flex-col justify-center space-y-8 relative">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-honey-500/20 w-fit backdrop-blur-md shadow-lg shadow-black/20">
-                <Sparkles className="w-4 h-4 text-honey-400" />
+              <div className="bee-badge w-fit">
+                <Sparkles className="w-4 h-4 text-bee-gold" />
                 <span className="text-sm font-bold shimmer-text tracking-wide uppercase">Offline Voice AI</span>
               </div>
               
               <div className="space-y-4">
                 <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
-                  <span className="text-gradient">OpenBee</span> 🐝 <br/>
-                  <span className="text-white/80 text-4xl md:text-5xl">Your Local Assistant</span>
+                  <span className="text-gradient">LocalBee</span> 🐝 <br/>
+                  <span className="text-bee-charcoal/80 text-4xl md:text-5xl">Your Local Assistant</span>
                 </h1>
                 
-                <p className="text-xl text-slate-400 leading-relaxed max-w-lg font-medium">
+                <p className="text-xl text-bee-gray leading-relaxed max-w-lg font-medium">
                   Lightning fast, completely private, and running entirely on your machine. Experience the future of offline voice interaction.
                 </p>
               </div>
 
               {error && (
-                <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm flex items-start gap-3 animate-in slide-in-from-left-4 max-w-lg backdrop-blur-md">
-                  <div className="p-1.5 rounded-full bg-red-500/20 mt-0.5 shadow-inner">
-                    <AlertCircle className="w-4 h-4 text-red-400" />
+                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm flex items-start gap-3 animate-in slide-in-from-left-4 max-w-lg">
+                  <div className="p-1.5 rounded-full bg-red-100 mt-0.5">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
                   </div>
                   <p className="font-medium leading-relaxed">{error}</p>
                 </div>
@@ -84,22 +83,22 @@ function App() {
             </div>
 
             {/* Right Column: Configuration & Start */}
-            <div className="flex-[0.8] w-full max-w-md mx-auto flex flex-col gap-6 bg-dark-bg/40 p-8 rounded-[2rem] border border-honey-500/10 backdrop-blur-2xl relative shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]">
-              {/* Inner shiny glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-honey-500/5 to-transparent rounded-[2rem] pointer-events-none border border-white/5" />
+            <div className="flex-[0.8] w-full max-w-md mx-auto flex flex-col gap-6 bee-card p-8 relative">
+              {/* Inner warm glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-bee-honey/5 to-transparent rounded-[2rem] pointer-events-none" />
               
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xl font-bold flex items-center gap-2 text-white">
-                  <AudioWaveform className="w-5 h-5 text-honey-400" />
+              <div className="flex items-center justify-between mb-2 relative z-10">
+                <h3 className="text-xl font-bold flex items-center gap-2 text-bee-black">
+                  <AudioWaveform className="w-5 h-5 text-bee-gold" />
                   Configuration
                 </h3>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-5 relative z-10">
                 {/* LLM Selection */}
-                <div className="flex flex-col gap-2 relative z-10">
-                  <label className="text-sm font-bold text-slate-300 flex items-center gap-2 tracking-wide uppercase">
-                    <Brain className="w-4 h-4 text-honey-400" /> Language Model
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-bee-charcoal flex items-center gap-2 tracking-wide uppercase">
+                    <Brain className="w-4 h-4 text-bee-gold" /> Language Model
                   </label>
                   <div className="relative group">
                     <select 
@@ -107,19 +106,19 @@ function App() {
                       value={models.llm}
                       onChange={e => setModels({...models, llm: e.target.value})}
                     >
-                      <option className="bg-slate-900 text-white" value="qwen2.5:1.5b">Gemma3 (1B)</option>
-                      <option className="bg-slate-900 text-white" value="gemma:2b">Qwen2.5 (1.5B)</option>
+                      <option value="qwen2.5:1.5b">Gemma3 (1B)</option>
+                      <option value="gemma:2b">Qwen2.5 (1.5B)</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-honey-400 transition-colors">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-bee-muted group-hover:text-bee-gold transition-colors">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                     </div>
                   </div>
                 </div>
 
                 {/* STT Selection */}
-                <div className="flex flex-col gap-2 relative z-10">
-                  <label className="text-sm font-bold text-slate-300 flex items-center gap-2 tracking-wide uppercase">
-                    <Mic className="w-4 h-4 text-accent-400" /> Speech to Text
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-bee-charcoal flex items-center gap-2 tracking-wide uppercase">
+                    <Mic className="w-4 h-4 text-bee-gold" /> Speech to Text
                   </label>
                   <div className="relative group">
                     <select 
@@ -127,19 +126,19 @@ function App() {
                       value={models.stt}
                       onChange={e => setModels({...models, stt: e.target.value})}
                     >
-                      <option className="bg-slate-900 text-white" value="whisper-base">Faster Whisper (Small)</option>
-                      <option className="bg-slate-900 text-white" value="whisper-tiny">Faster Whisper (Base)</option>
+                      <option value="whisper-base">Faster Whisper (Small)</option>
+                      <option value="whisper-tiny">Faster Whisper (Base)</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-accent-400 transition-colors">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-bee-muted group-hover:text-bee-gold transition-colors">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                     </div>
                   </div>
                 </div>
 
                 {/* TTS Selection */}
-                <div className="flex flex-col gap-2 relative z-10">
-                  <label className="text-sm font-bold text-slate-300 flex items-center gap-2 tracking-wide uppercase">
-                    <Volume2 className="w-4 h-4 text-honey-300" /> Text to Speech
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-bee-charcoal flex items-center gap-2 tracking-wide uppercase">
+                    <Volume2 className="w-4 h-4 text-bee-amber" /> Text to Speech
                   </label>
                   <div className="relative group">
                     <select 
@@ -147,27 +146,27 @@ function App() {
                       value={models.tts}
                       onChange={e => setModels({...models, tts: e.target.value})}
                     >
-                      <option className="bg-slate-900 text-white" value="kokoro-v0.19">Kokoro V0.19</option>
+                      <option value="kokoro-v0.19">Kokoro V0.19</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-honey-300 transition-colors">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-bee-muted group-hover:text-bee-amber transition-colors">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 relative z-10">
                 <button
                   onClick={handleJoin}
                   disabled={loading}
-                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-honey-600 via-honey-500 to-accent-500 hover:from-honey-500 hover:to-accent-400 text-black font-bold text-lg shadow-[0_0_30px_rgba(251,191,36,0.2)] hover:shadow-[0_0_40px_rgba(251,191,36,0.4)] transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden z-10 flex items-center justify-center border border-honey-400/30"
+                  className="bee-cta group"
                 >
                   {/* Hover Shine Effect */}
-                  <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
                   
                   {loading ? (
                     <span className="flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-bee-black/20 border-t-bee-black rounded-full animate-spin" />
                       Connecting...
                     </span>
                   ) : (
