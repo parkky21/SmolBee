@@ -10,6 +10,16 @@ from livekit.plugins import openai, silero ,noise_cancellation
 from plugins.llm_plugin import LocalLlamaLLM
 from plugins.stt_plugin import LocalWhisperSTT
 from plugins.tts_plugin import LocalKokoroTTS
+from rich.console import Console
+from rich.table import Table
+from rich import box
+from datetime import datetime
+from core.metrix_collector import (
+    on_llm_metrics_collected, 
+    on_stt_metrics_collected, 
+    on_tts_metrics_collected, 
+    on_eou_metrics_collected
+)
 
 load_dotenv()
 logger = logging.getLogger("Agent")
@@ -20,82 +30,32 @@ _SYSTEM_PROMPT = _PROMPT_PATH.read_text(encoding="utf-8").strip()
 
 class Assistant(Agent):
     def __init__(self) -> None:
-        agent_stt = LocalWhisperSTT(model_size="distil-small.en", language="en")
-        agent_llm = LocalLlamaLLM(model_path="models/gemma-3-1b-it-Q8_0.gguf")
-        agent_tts = LocalKokoroTTS(voice="af_heart")
-
         super().__init__(
-            instructions=_SYSTEM_PROMPT,
-            stt=agent_stt,
-            llm=agent_llm,
-            tts=agent_tts,
+            instructions=_SYSTEM_PROMPT
         )
-
-        self._latest_eou_delay: float = 0.0
-        self._latest_transcription_delay: float = 0.0
-        self._latest_ttft: float = 0.0
-
-        def llm_metrics_wrapper(metrics: LLMMetrics):
-            asyncio.create_task(self.on_llm_metrics_collected(metrics))
-        agent_llm.on("metrics_collected", llm_metrics_wrapper)
-
-        def stt_metrics_wrapper(metrics: STTMetrics):
-            asyncio.create_task(self.on_stt_metrics_collected(metrics))
-        agent_stt.on("metrics_collected", stt_metrics_wrapper)
-
-        def eou_metrics_wrapper(metrics: EOUMetrics):
-            asyncio.create_task(self.on_eou_metrics_collected(metrics))
-        agent_stt.on("eou_metrics_collected", eou_metrics_wrapper)
-
-        def tts_metrics_wrapper(metrics: TTSMetrics):
-            asyncio.create_task(self.on_tts_metrics_collected(metrics))
-        agent_tts.on("metrics_collected", tts_metrics_wrapper)
-
-    async def on_llm_metrics_collected(self, metrics: LLMMetrics) -> None:
-        self._latest_ttft = metrics.ttft
-        print("\n--- LLM Metrics ---")
-        print(f"Prompt Tokens: {metrics.prompt_tokens}")
-        print(f"Completion Tokens: {metrics.completion_tokens}")
-        print(f"Tokens per second: {metrics.tokens_per_second:.4f}")
-        print(f"TTFT: {metrics.ttft:.4f}s")
-        print("------------------\n")
-
-    async def on_stt_metrics_collected(self, metrics: STTMetrics) -> None:
-        print("\n--- STT Metrics ---")
-        print(f"Duration: {metrics.duration:.4f}s")
-        print(f"Audio Duration: {metrics.audio_duration:.4f}s")
-        print(f"Streamed: {'Yes' if metrics.streamed else 'No'}")
-        print("------------------\n")
-
-    async def on_eou_metrics_collected(self, metrics: EOUMetrics) -> None:
-        self._latest_eou_delay = metrics.end_of_utterance_delay
-        self._latest_transcription_delay = metrics.transcription_delay
-        print("\n--- End of Utterance Metrics ---")
-        print(f"End of Utterance Delay: {metrics.end_of_utterance_delay:.4f}s")
-        print(f"Transcription Delay: {metrics.transcription_delay:.4f}s")
-        print("--------------------------------\n")
-
-    async def on_tts_metrics_collected(self, metrics: TTSMetrics) -> None:
-        print("\n--- TTS Metrics ---")
-        print(f"TTFB: {metrics.ttfb:.4f}s")
-        print(f"Duration: {metrics.duration:.4f}s")
-        print(f"Audio Duration: {metrics.audio_duration:.4f}s")
-        print(f"Streamed: {'Yes' if metrics.streamed else 'No'}")
-        print("------------------\n")
-
-        overall_latency = (
-            self._latest_eou_delay + 
-            self._latest_transcription_delay + 
-            self._latest_ttft + 
-            metrics.ttfb
-        )
-        print(f"🚀 *** OVERALL PIPELINE LATENCY: {overall_latency:.4f}s ***\n")
-
 
     async def on_enter(self):
+        def sync_wrapper(metrics: LLMMetrics):
+            asyncio.create_task(on_llm_metrics_collected(metrics))
+
+        def stt_wrapper(metrics: STTMetrics):
+            asyncio.create_task(on_stt_metrics_collected(metrics))
+
+        def eou_wrapper(metrics: EOUMetrics):
+            asyncio.create_task(self.on_eou_metrics_collected(metrics))
+        
+        def tts_wrapper(metrics: TTSMetrics):
+            asyncio.create_task(on_tts_metrics_collected(metrics))
+
+        self.session.stt.on("metrics_collected", stt_wrapper)
+        self.session.stt.on("eou_metrics_collected", eou_wrapper)
+        self.session.llm.on("metrics_collected", sync_wrapper)
+        self.session.tts.on("metrics_collected", tts_wrapper)
+
         self.session.generate_reply(
             instructions="Greet the user and tell him about yourself. Keep it short and sweet.", allow_interruptions=True
         )
+        
 
 async def entrypoint(ctx: JobContext):
     # This determines connection initialization
@@ -108,12 +68,12 @@ async def entrypoint(ctx: JobContext):
     logger.info(f"starting voice assistant for participant {participant.identity}")
 
     session = AgentSession(
-        # llm=LocalLlamaLLM(model_path="models/gemma-3-1b-it-Q8_0.gguf"),
-        # stt=LocalWhisperSTT(model_size="distil-small.en", language="en"),
-        # tts=LocalKokoroTTS(voice="af_heart"),
+        llm=LocalLlamaLLM(model_path="models/gemma-3-1b-it-Q8_0.gguf"),
+        stt=LocalWhisperSTT(model_size="distil-small.en", language="en"),
+        tts=LocalKokoroTTS(voice="af_heart"),
         vad=ctx.proc.userdata["vad"],
-        min_endpointing_delay=0.5,
-        max_endpointing_delay=5.0,
+        # min_endpointing_delay=0.5,
+        # max_endpointing_delay=5.0,
     )
     
     await session.start(
