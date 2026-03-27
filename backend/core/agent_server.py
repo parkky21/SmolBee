@@ -11,7 +11,11 @@ class VADPrewarmer:
         pass
     def __call__(self, proc: agents.JobProcess):
         logger.info("+++++++++++++ Prewarming VAD ++++++++++++++")
-        vad = silero.VAD.load()
+        vad = silero.VAD.load(
+            sample_rate=8000,
+            force_cpu=True,
+            min_silence_duration=0.25,
+        )
         proc.userdata["vad"] = vad
 
 class AgentRunner:
