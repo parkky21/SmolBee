@@ -1,36 +1,17 @@
 import asyncio
 import json
 import logging
-import os
-from pathlib import Path
-from dotenv import load_dotenv
 from livekit import agents, rtc
 from livekit.agents import metrics, MetricsCollectedEvent
-from livekit.agents import AgentServer, Agent, AgentSession, AutoSubscribe, JobContext, JobProcess, WorkerOptions, cli, llm, room_io
+from livekit.agents import AgentSession, AutoSubscribe, JobContext, room_io
 from livekit.agents.metrics import LLMMetrics, STTMetrics, TTSMetrics, EOUMetrics
-from livekit.plugins import openai, silero, noise_cancellation
+from livekit.plugins import silero, noise_cancellation
 from plugins.llm_plugin import LocalLlamaLLM
 from plugins.stt_plugin import LocalWhisperSTT
 from plugins.tts_plugin import LocalKokoroTTS
+from core.prime_agent import Assistant
 
-load_dotenv()
 logger = logging.getLogger("Agent")
-
-# Load system prompt from markdown file
-_PROMPT_PATH = Path(__file__).parent / "system_prompt.md"
-_SYSTEM_PROMPT = _PROMPT_PATH.read_text(encoding="utf-8").strip()
-
-class Assistant(Agent):
-    def __init__(self) -> None:
-        super().__init__(
-            instructions=_SYSTEM_PROMPT
-        )
-
-    async def on_enter(self):
-        self.session.generate_reply(
-            instructions="Greet the user and tell him about yourself. Keep it short and sweet.", allow_interruptions=True
-        )
-
 
 async def entrypoint(ctx: JobContext):
     await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
