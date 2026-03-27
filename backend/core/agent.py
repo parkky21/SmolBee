@@ -1,25 +1,17 @@
 import asyncio
+import json
 import logging
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 from livekit import agents, rtc
-from livekit.agents.metrics import LLMMetrics, STTMetrics, TTSMetrics, EOUMetrics
+from livekit.agents import metrics, MetricsCollectedEvent
 from livekit.agents import AgentServer, Agent, AgentSession, AutoSubscribe, JobContext, JobProcess, WorkerOptions, cli, llm, room_io
-from livekit.plugins import openai, silero ,noise_cancellation
+from livekit.agents.metrics import LLMMetrics, STTMetrics, TTSMetrics, EOUMetrics
+from livekit.plugins import openai, silero, noise_cancellation
 from plugins.llm_plugin import LocalLlamaLLM
 from plugins.stt_plugin import LocalWhisperSTT
 from plugins.tts_plugin import LocalKokoroTTS
-from rich.console import Console
-from rich.table import Table
-from rich import box
-from datetime import datetime
-from core.metrix_collector import (
-    on_llm_metrics_collected, 
-    on_stt_metrics_collected, 
-    on_tts_metrics_collected, 
-    on_eou_metrics_collected
-)
 
 load_dotenv()
 logger = logging.getLogger("Agent")
@@ -35,35 +27,16 @@ class Assistant(Agent):
         )
 
     async def on_enter(self):
-        def sync_wrapper(metrics: LLMMetrics):
-            asyncio.create_task(on_llm_metrics_collected(metrics))
-
-        def stt_wrapper(metrics: STTMetrics):
-            asyncio.create_task(on_stt_metrics_collected(metrics))
-
-        def eou_wrapper(metrics: EOUMetrics):
-            asyncio.create_task(self.on_eou_metrics_collected(metrics))
-        
-        def tts_wrapper(metrics: TTSMetrics):
-            asyncio.create_task(on_tts_metrics_collected(metrics))
-
-        self.session.stt.on("metrics_collected", stt_wrapper)
-        self.session.stt.on("eou_metrics_collected", eou_wrapper)
-        self.session.llm.on("metrics_collected", sync_wrapper)
-        self.session.tts.on("metrics_collected", tts_wrapper)
-
         self.session.generate_reply(
             instructions="Greet the user and tell him about yourself. Keep it short and sweet.", allow_interruptions=True
         )
-        
+
 
 async def entrypoint(ctx: JobContext):
-    # This determines connection initialization
     await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
     logger.info(f"Room name: {ctx.room.name}")
-    
-    # Wait for the first participant to connect
+
     participant = await ctx.wait_for_participant()
     logger.info(f"starting voice assistant for participant {participant.identity}")
 
@@ -72,10 +45,37 @@ async def entrypoint(ctx: JobContext):
         stt=LocalWhisperSTT(model_size="distil-small.en", language="en"),
         tts=LocalKokoroTTS(voice="af_heart"),
         vad=ctx.proc.userdata["vad"],
-        # min_endpointing_delay=0.5,
-        # max_endpointing_delay=5.0,
     )
-    
+
+    # --- Metrics handler: log + publish to frontend ---
+    @session.on("metrics_collected")
+    def _on_metrics_collected(ev: MetricsCollectedEvent):
+        # Log to terminal using built-in logger
+        metrics.log_metrics(ev.metrics)
+
+        # Build a JSON payload for the frontend
+        m = ev.metrics
+        payload = {}
+        if isinstance(m, EOUMetrics):
+            payload["eou_delay"] = round(m.end_of_utterance_delay, 4)
+            payload["transcription_delay"] = round(m.transcription_delay, 4)
+        elif isinstance(m, LLMMetrics):
+            payload["llm_ttft"] = round(m.ttft, 4)
+            payload["tokens_per_second"] = round(m.tokens_per_second, 2)
+        elif isinstance(m, TTSMetrics):
+            payload["tts_ttfb"] = round(m.ttfb, 4)
+            payload["tts_chars"] = m.characters_count
+        elif isinstance(m, STTMetrics):
+            payload["stt_duration"] = round(m.duration, 4)
+
+        if payload:
+            asyncio.create_task(
+                ctx.room.local_participant.publish_data(
+                    json.dumps(payload),
+                    topic="lk.agent.metrics",
+                )
+            )
+
     await session.start(
         room=ctx.room,
         agent=Assistant(),
@@ -85,3 +85,4 @@ async def entrypoint(ctx: JobContext):
             ),
         ),
     )
+

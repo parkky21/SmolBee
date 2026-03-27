@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from uuid import uuid4
 
 load_dotenv()
 
@@ -8,7 +9,7 @@ class GetConfigs:
         self.LIVEKIT_URL = os.getenv("LIVEKIT_URL")
         self.LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY")
         self.LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET")
-        self.room_name= "offline_agent"
+        self.room_name= None
         self.agent_name="SmolBee"
 
     def get_livekit_url(self):
@@ -18,6 +19,7 @@ class GetConfigs:
     def get_livekit_api_secret(self):
         return self.LIVEKIT_API_SECRET
     def get_room_name(self):
+        self.room_name = f"offline_agent_{uuid4().hex}"
         return self.room_name
     def get_agent_name(self):
         return self.agent_name

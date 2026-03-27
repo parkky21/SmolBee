@@ -15,7 +15,7 @@ class LocalKokoroTTS(tts.TTS):
     def __init__(self, voice="af_heart"):
         super().__init__(
             capabilities=tts.TTSCapabilities(
-                streaming=False, # We'll do chunked synthesis rather than true chunked streaming for simplicity first
+                streaming=False,
             ),
             sample_rate=24000,
             num_channels=1
@@ -70,6 +70,7 @@ class LocalKokoroTTS(tts.TTS):
                     output_emitter.end_segment()
             except Exception as e:
                 print(f"Kokoro TTS error: {e}")
+                raise
 
     def stream(
         self, *, conn_options: types.APIConnectOptions | None = None
