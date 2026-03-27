@@ -15,6 +15,9 @@ class VADPrewarmer:
             sample_rate=8000,
             force_cpu=True,
             min_silence_duration=0.25,
+            min_speech_duration=0.1,
+            prefix_padding_duration=0.1,
+            activation_threshold=0.5,
         )
         proc.userdata["vad"] = vad
 
